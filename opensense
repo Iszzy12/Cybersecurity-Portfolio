@@ -1,0 +1,189 @@
+OPNsense Firewall Deployment – Home Lab
+
+Author: Johnson Akpososo Israel
+Date: 30 July 2025
+Environment: Home Lab
+Status: Production-ready (VLAN rollout pending)
+
+Project Overview
+
+This project documents the deployment of a dedicated, open-source firewall using OPNsense 25.1 to replace an ISP-provided router.
+The goal was to gain full control over routing, security, and visibility while eliminating vendor lock-in.
+
+The firewall now acts as the core security and networking layer for the home lab, enabling advanced segmentation, monitoring, and future expansion.
+
+Objectives
+
+Replace ISP router with a dedicated firewall
+
+Achieve full visibility into network traffic
+
+Enable VLAN-based network segmentation
+
+Prepare the environment for VPN and IDS/IPS
+
+Avoid proprietary hardware and software lock-in
+
+Platform Chosen
+
+OPNsense 25.1 (amd64)
+
+FreeBSD-based, open-source firewall
+
+Actively maintained by Deciso B.V. and the community
+
+Web-based management interface
+
+Security- and privacy-focused design
+
+Hardware Specifications
+
+Firewall Appliance
+
+Fanless mini-PC
+
+Intel J6412 quad-core CPU
+
+8 GB DDR4 RAM
+
+120 GB SATA SSD
+
+Networking
+
+Dual Intel i226-V NICs
+
+em0: LAN (192.168.1.1/24)
+
+em1: WAN (DHCP client to ISP modem)
+
+Access
+
+USB-C serial console for initial setup and recovery
+
+Installation and Initial Configuration
+Installation Media
+
+Downloaded OPNsense 25.1 serial-memstick image
+
+Written to USB using balenaEtcher
+
+System Installation
+
+Booted from USB
+
+Installed using ZFS (single disk) for snapshots and rollback
+
+Interface Assignment
+
+em0 assigned to LAN
+
+em1 configured as WAN (DHCP)
+
+Web Interface
+
+Accessible via https://192.168.1.1
+
+Strong root password configured
+
+Self-signed HTTPS certificate generated (ACME planned)
+
+Security Hardening
+SSH
+
+SSH disabled via GUI
+
+Console access retained for emergencies
+
+Web Interface
+
+GUI access restricted to LAN subnet
+
+Anti-lockout rule enabled
+
+System Integrity
+
+SHA256 host keys recorded for verification
+
+Firmware updates pinned to the stable train
+
+Automatic configuration backup enabled before upgrades
+
+Firewall Policy (LAN)
+
+Default LAN → Any rule retained for initial connectivity
+
+Primary allow rule logged for baseline traffic visibility
+
+DNS enforcement:
+
+Allow LAN to firewall on UDP 53
+
+Redirect external DNS requests to Unbound
+
+RFC1918 block rule prepared for future IoT VLAN isolation
+
+Enabled Services
+DNS
+
+Unbound DNS resolver in resolver mode
+
+DNSSEC enabled
+
+Time Synchronization
+
+Local NTP server for LAN clients
+
+Intrusion Detection
+
+Suricata enabled with ET-Open rules
+
+Running in IDS (detect-only) mode for tuning
+
+Monitoring
+
+pfTop live traffic view added to dashboard
+
+RRD graphs enabled with 90-day retention
+
+Backup and Monitoring Strategy
+
+Nightly encrypted configuration backups via cron
+
+Offloaded to a private Git repository using git-secret
+
+Manual pre-change backups taken before all modifications
+
+Console recovery options retained
+
+Roadmap
+
+VLAN segmentation
+
+VLAN 20 for IoT devices
+
+VLAN 30 for guest network
+
+WireGuard VPN for remote access
+
+HAProxy for reverse proxying internal services
+
+Transition Suricata to IPS mode after tuning
+
+Network upgrade with 10 GbE NIC and LACP to NAS
+
+Key Takeaways
+
+Deployment completed in under 15 minutes
+
+Web interface remains responsive on low-power hardware
+
+Serial console provides reliable recovery access
+
+Logging revealed hardcoded external DNS usage by LAN clients
+
+Community documentation and forums were effective for troubleshooting
+
+
+
+
+The firewall is production-ready and awaiting the next maintenance window for VLAN deployment.
